@@ -1,0 +1,34 @@
+FROM rocker/r-ver:3.6.3
+
+# Install Linux libraries or tools
+RUN apt-get update && apt-get install -y \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    git \
+    libxml2-dev \
+    wget
+
+# Install bioconductor packages
+RUN R -e "install.packages('BiocManager', repos='https://cloud.r-project.org')"
+
+RUN wget https://cran.r-project.org/src/contrib/Archive/XML/XML_3.99-0.3.tar.gz
+RUN R CMD INSTALL XML_3.99-0.3.tar.gz
+
+RUN R -e "library('XML')"
+RUN R -e "install.packages(c('progress', 'dbplyr', 'dplyr', 'RSQLite', 'DBI', 'rappdirs', 'curl', 'httr','RCurl', 'stringr', 'jsonlite', 'httr', 'checkmate'), repos='http://cran.rstudio.com/')"
+
+
+# # Install Bioconductor packages
+RUN R -e "BiocManager::install('biomaRt', version = '3.10')"
+RUN R -e "BiocManager::install('graphite', version = '3.10')"
+
+# Get Pathway2Targets
+RUN git clone https://github.com/bpickett/Pathway2Targets.git /Pathway2Targets
+
+# # Get pathway data
+# RUN R -e "library('graphite')" \
+#     -e "prepareSPIA(humanReactome, "Reactome", print.names=TRUE)"
+
+# Run Pathway2Targets
+CMD ["Rscript", "/Pathway2Targets/Pathway2Targets.R" "/Pathway2Targets/Example_enrichr_Input.csv"]
+CMD [ls "/Pathway2Targets/"]
