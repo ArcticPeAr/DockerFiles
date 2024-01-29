@@ -16,7 +16,7 @@ RUN R CMD INSTALL XML_3.99-0.3.tar.gz
 
 RUN R -e "library('XML')"
 RUN R -e "install.packages(c('progress', 'dbplyr', 'dplyr', 'RSQLite', 'DBI', 'rappdirs', 'curl', 'httr','RCurl', 'stringr', 'jsonlite', 'httr', 'checkmate'), repos='http://cran.rstudio.com/')"
-
+RUN R -e "install.packages('devtools', repos='http://cran.rstudio.com/')"
 
 # # Install Bioconductor packages
 RUN R -e "BiocManager::install('biomaRt', version = '3.10')"
