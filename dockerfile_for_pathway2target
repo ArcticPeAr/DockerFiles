@@ -1,0 +1,38 @@
+FROM rocker/r-ver:3.6.3
+
+# Install Linux libraries or tools
+RUN apt-get update && apt-get install -y \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    git \
+    libxml2-dev \
+    wget
+
+# Install bioconductor packages
+RUN R -e "install.packages('BiocManager', repos='https://cloud.r-project.org')"
+
+RUN wget https://cran.r-project.org/src/contrib/Archive/XML/XML_3.99-0.3.tar.gz
+RUN R CMD INSTALL XML_3.99-0.3.tar.gz
+
+RUN R -e "library('XML')"
+RUN R -e "install.packages(c('progress', 'dbplyr', 'dplyr', 'RSQLite', 'DBI', 'rappdirs', 'curl', 'httr','RCurl', 'stringr', 'jsonlite', 'httr', 'checkmate'), repos='http://cran.rstudio.com/')"
+
+
+# # Install Bioconductor packages
+RUN R -e "BiocManager::install('biomaRt', version = '3.10')"
+RUN R -e "BiocManager::install('graphite', version = '3.10')"
+RUN R -e "devtools::install_version("dbplyr", version = "2.3.4")"
+# Get Pathway2Targets
+RUN git clone https://github.com/bpickett/Pathway2Targets.git /Pathway2Targets
+
+# Get pathway data
+RUN R -e "library(graphite); humanPathways <- pathways(species = 'hsapiens', database = 'reactome')"
+
+# Create directory for Pathway2Targets
+RUN mkdir -p /root/fsl_groups/fslg_PickettLabGroup/spia
+
+# Run Pathway2Targets
+RUN Rscript --vanilla "/Pathway2Targets/Pathways2Targets2.R" "/Pathway2Targets/Example_enrichr_Input.csv"
+
+# Print files in the container
+RUN ls -l /Pathway2Targets
