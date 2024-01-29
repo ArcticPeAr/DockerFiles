@@ -21,7 +21,7 @@ RUN R -e "install.packages(c('progress', 'dbplyr', 'dplyr', 'RSQLite', 'DBI', 'r
 # # Install Bioconductor packages
 RUN R -e "BiocManager::install('biomaRt', version = '3.10')"
 RUN R -e "BiocManager::install('graphite', version = '3.10')"
-RUN R -e "devtools::install_version("dbplyr", version = "2.3.4")"
+RUN R -e "devtools::install_version('dbplyr', version = '2.3.4')"
 # Get Pathway2Targets
 RUN git clone https://github.com/bpickett/Pathway2Targets.git /Pathway2Targets
 
